@@ -32,3 +32,7 @@ Version 0.2.1 recognizes LeetCode’s cpp language identifier. C++ checks includ
 ## Attempted but not solved — 0.3.0
 
 The dashboard lists problems attempted in the selected year without an accepted submission in the imported history through the review end date. Search by title; view attempt counts, last submission date, latest verdict, and links to LeetCode. Incomplete exports can cause solved problems to appear here. Reload the extension and reopen Reflect to recalculate from saved data.
+
+## Review sections — 0.4.0
+
+Coding habits contains formatting, naming, readability, and structure. Algorithms & improvement contains source-based algorithm/data-structure suggestions and separately labeled outcome-based practice signals. Topic statistics and the four-week practice plan remain below. All results use local JavaScript rules, not a ChatGPT API or another model. There is no semantic algorithm evaluator. Reload and reopen the extension to apply.
