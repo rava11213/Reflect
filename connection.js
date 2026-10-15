@@ -20,4 +20,4 @@ $('#connect').onclick=async()=>{
  }catch(e){$('#message').textContent=e.message}
  finally{button.disabled=false}
 };
-const oldClear=$('#clear').onclick;$('#clear').onclick=async()=>{await chrome.storage.local.remove(['history','syncState']);oldClear();$('#connect').disabled=false};
+const oldClear=$('#clear').onclick;$('#clear').onclick=async()=>{await chrome.storage.local.remove(['history','syncState','aiReport']);if(typeof clearAIView==='function')clearAIView();oldClear();$('#connect').disabled=false};
