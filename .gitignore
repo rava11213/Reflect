@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+*.log
+.env
+.env.*
+*submissions*.json
+leetcode-year.json
+reflect-report.json

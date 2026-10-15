@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');const {review}=require('./review.js');
+const s=(id,title,code,lang='Python3')=>({id,title,code,lang,timestamp:'2026-10-01T00:00:00Z'});
+let r=review([s('1','A','def solve(values):\n    tmp=1\n    return tmp'),s('2','B','def solve(values):\n    tmp=2\n    return tmp')]);assert.equal(r.findings.find(f=>f.key==='naming').problemCount,2);assert.equal(r.findings.find(f=>f.key==='spacing').examples[0].line,2);
+assert.equal(review([s('1','A','# tmp=1\ntext = "queue.pop(0)"\n"""tmp=2"""')]).findings.length,0);
+assert.equal(review([s('1','A','def solve(values):\n    for i in values:\n        print(i)')]).findings.some(f=>f.key==='naming'),false);
+assert.equal(review([s('1','A','foo=1'),s('2','A','count = 1')]).findings.length,0);
+r=review([s('1','Two Sum','def twoSum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1,len(nums)):\n            if nums[i]+nums[j]==target:\n                return [i,j]')]);assert.equal(r.findings.find(f=>f.key==='two-sum').confidence,'Needs problem verification');
+assert.equal(review([s('1','Other','for a in nums:\n    for b in nums:\n        pass')]).findings.some(f=>f.key==='two-sum'),false);
+assert.equal(review([s('1','A','q.pop(0)','Rust')]).coverage.reviewedSolutions,0);
+assert.equal(review([s('1','A','const tmp = 1; // q.pop(0)','JavaScript')]).findings.find(f=>f.key==='naming').examples[0].line,1);
+assert.equal(review([s('1','A','def solve(queue):\n    queue.pop(0)')]).findings.find(f=>f.key==='queue').examples[0].line,2);
+console.log('Passed: source evidence, recurrence, string/comment masking, conventional indices, latest-solution deduplication, algorithm scope, unsupported languages.');
+const cpp=review([s('cpp1','Example','int tmp=0;\nfor (auto value : objects) {\n cout << value << std::endl;\n}','cpp')]);assert.equal(cpp.coverage.reviewedSolutions,1);assert.equal(cpp.findings.find(f=>f.key==='cpp-spacing').examples[0].line,1);assert.ok(cpp.findings.some(f=>f.key==='naming'));assert.ok(cpp.findings.some(f=>f.key==='cpp-range-copy'));assert.ok(cpp.findings.some(f=>f.key==='cpp-flush'));assert.equal(review([s('sql1','Query','SELECT * FROM users','mysql')]).coverage.reviewedSolutions,0);assert.equal(review([s('cpp2','Safe','// int tmp=0;\nstd::string message = "int tmp=0;";','cpp')]).findings.length,0);console.log('Passed: LeetCode cpp alias, C++ evidence, string/comment exclusions, MySQL coverage.');

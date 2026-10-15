@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Reflect \u2014 LeetCode connection",
+  "version": "0.2.1",
+  "description": "Read your last year of submissions from your signed-in LeetCode tab and analyze them locally.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "scripting"
+  ],
+  "action": {
+    "default_title": "Open Reflect"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://leetcode.com/*"
+      ],
+      "js": [
+        "sync.js"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "https://leetcode.com/*"
+  ]
+}
