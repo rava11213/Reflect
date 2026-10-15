@@ -28,3 +28,7 @@ The Two Sum pattern check only suggests comparing Python nested-loop implementat
 Reload the extension in chrome://extensions and reopen Reflect to apply this update. Saved synced history is reanalyzed automatically; source code must be present. Tests: node test-review.cjs and node test-connection.cjs.
 
 Version 0.2.1 recognizes LeetCode’s cpp language identifier. C++ checks include simple initializer spacing, generic local names, long lines, range-loop copy suggestions, and endl flush suggestions. MySQL source review remains unsupported.
+
+## Attempted but not solved — 0.3.0
+
+The dashboard lists problems attempted in the selected year without an accepted submission in the imported history through the review end date. Search by title; view attempt counts, last submission date, latest verdict, and links to LeetCode. Incomplete exports can cause solved problems to appear here. Reload the extension and reopen Reflect to recalculate from saved data.
