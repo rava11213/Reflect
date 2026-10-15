@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {once} from 'node:events';
-import {createReviewServer,validateInput,validateReview,generateReview} from './ai-server.mjs';
+import {createReviewServer,validateInput,validateReview,generateReview} from '../server/ai-server.mjs';
 const submissions=[{id:'1',title:'Two Sum',lang:'cpp',code:'int count = 0;\nreturn count;',problem:'Return a result. Constraints: 1 <= n <= 100.'}];
 const evidence={submission_id:'1',line_start:1,line_end:1,quote:'int count = 0;'};
 const review={summary:'Sample only.',coding_habits:[{title:'Naming',explanation:'Local count.',suggestion:'Use a role-specific name.',confidence:'medium',evidence:[evidence]}],algorithms:[{submission_id:'1',approach:'Constant return',time_complexity:'O(1)',space_complexity:'O(1)',assessment:'Check requirements.',alternative:'Depends on constraints.',alternative_time:'Unknown',alternative_space:'Unknown',tradeoff:'Needs verification.',confidence:'low',evidence:[evidence]}],improvement_plan:[{focus:'Trace examples',exercise:'Trace a boundary example.',submission_ids:['1']}],limitations:['No execution performed.']};

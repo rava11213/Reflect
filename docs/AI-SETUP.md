@@ -1,4 +1,4 @@
-# Enable AI reviews in Reflect 0.5.0
+# Enable AI reviews in Reflect 0.5.1
 
 The extension now supports real OpenAI API reviews. API usage is separate from the local heuristic checks. You need your own OpenAI API key and API billing/model access; do not paste the key into this chat or the extension.
 
@@ -6,16 +6,16 @@ The extension now supports real OpenAI API reviews. API usage is separate from t
 
 1. Reload Reflect in `chrome://extensions`. If prompted, approve access to the local review server. Open Reflect again.
 2. Copy Reflect's extension ID from `chrome://extensions`.
-3. In Finder, double-click `start-ai.command` in this folder. It opens Terminal. Enter your extension ID, choose a model available to your API account, and enter your API key at the hidden prompt. The default is `gpt-6-astra`; you can change it. Node.js 20 or later must be installed.
+3. In Finder, double-click `start-ai.command` in the project root folder. It opens Terminal. Enter your extension ID, choose a model available to your API account, and enter your API key at the hidden prompt. The default is `gpt-6-astra`; you can change it. Node.js 20 or later must be installed.
 4. Leave that Terminal window running. Reflect's **AI review → Check AI connection** should report ready.
 5. Select 1–5 latest solutions, then click **Prepare selected solutions**. Reflect fetches the problem statement from your signed-in LeetCode tab. If unavailable, paste the full problem and constraints into the visible context box. You can edit the context and inspect the exact source before sending.
 6. Check the consent box and click **Run AI review**. Nothing is sent to OpenAI during ordinary sync or preparation. API charges apply when you run a review.
 
-The launcher keeps the key in process memory/environment, not in files. Stop with Ctrl+C in Terminal; start again when needed. If macOS blocks opening the launcher, open Terminal in this folder and run `zsh start-ai.command` yourself.
+The launcher keeps the key in process memory/environment, not in files. Stop with Ctrl+C in Terminal; start again when needed. If macOS blocks opening the launcher, open Terminal in the project root folder and run `zsh start-ai.command` yourself.
 
 ## Start manually (macOS zsh)
 
-Run from the extension folder:
+Run from the project root folder (the folder containing manifest.json):
 
 ```zsh
 read "REFLECT_EXTENSION_ID?Reflect extension ID: "
@@ -24,7 +24,7 @@ read "OPENAI_MODEL?OpenAI API model: "
 export OPENAI_MODEL
 read -s "OPENAI_API_KEY?OpenAI API key (hidden): "
 export OPENAI_API_KEY
-node ai-server.mjs
+node server/ai-server.mjs
 ```
 
 The server binds only to `127.0.0.1:4318`. It accepts browser requests only from the exact configured extension origin, and checks the Host header. The API key is never returned to the extension. Restart if you change the key, model, or extension ID. Do not expose this server on the network. API authentication, quota, model-access, and incomplete-result failures appear in Reflect. No automatic retry triggers additional charges.
@@ -43,10 +43,10 @@ The server binds only to `127.0.0.1:4318`. It accepts browser requests only from
 No npm packages are needed. Run:
 
 ```sh
-node test-ai.mjs
-node test-review.cjs
-node test-unsolved.cjs
-node test-connection.cjs
+node tests/test-ai.mjs
+node tests/test-review.cjs
+node tests/test-unsolved.cjs
+node tests/test-connection.cjs
 ```
 
 AI tests use an injected mock API transport and a real loopback HTTP server; they make no OpenAI calls and incur no charges. The first live review requires a key configured by you.

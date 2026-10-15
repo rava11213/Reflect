@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict');const {review}=require('./review.js');
+const assert=require('node:assert/strict');const {review}=require('../extension/analysis/review.js');
 const s=(id,title,code,lang='Python3')=>({id,title,code,lang,timestamp:'2026-10-01T00:00:00Z'});
 let r=review([s('1','A','def solve(values):\n    tmp=1\n    return tmp'),s('2','B','def solve(values):\n    tmp=2\n    return tmp')]);assert.equal(r.findings.find(f=>f.key==='naming').problemCount,2);assert.equal(r.findings.find(f=>f.key==='spacing').examples[0].line,2);
 assert.equal(review([s('1','A','# tmp=1\ntext = "queue.pop(0)"\n"""tmp=2"""')]).findings.length,0);

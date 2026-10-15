@@ -11,7 +11,7 @@ $('#connect').onclick=async()=>{
   let response;
   try{response=await chrome.tabs.sendMessage(tab.id,{kind:'reflect-sync'})}
   catch(firstError){
-   try{await chrome.scripting.executeScript({target:{tabId:tab.id},files:['sync.js']});response=await chrome.tabs.sendMessage(tab.id,{kind:'reflect-sync'})}
+   try{await chrome.scripting.executeScript({target:{tabId:tab.id},files:['extension/content/sync.js']});response=await chrome.tabs.sendMessage(tab.id,{kind:'reflect-sync'})}
    catch(error){throw Error('Could not attach to LeetCode: '+error.message+' Check that Reflect has site access to https://leetcode.com and reload the extension after updating.');}
   }
   if(response?.error)throw Error(response.error);

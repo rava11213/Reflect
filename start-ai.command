@@ -13,4 +13,4 @@ export OPENAI_MODEL="${reflectModel:-gpt-6-astra}"
 read -s 'OPENAI_API_KEY?OpenAI API key (hidden): '
 print ''
 export OPENAI_API_KEY
-exec node ai-server.mjs
+exec node server/ai-server.mjs

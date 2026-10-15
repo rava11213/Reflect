@@ -1,4 +1,4 @@
-chrome.action.onClicked.addListener(()=>chrome.tabs.create({url:chrome.runtime.getURL('index.html')}));
+chrome.action.onClicked.addListener(()=>chrome.tabs.create({url:chrome.runtime.getURL('extension/dashboard/index.html')}));
 const trusted=sender=>sender.tab?.url?.startsWith('https://leetcode.com/');
 chrome.runtime.onMessage.addListener((m,sender,reply)=>{
  if(!trusted(sender))return;

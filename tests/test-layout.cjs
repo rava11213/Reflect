@@ -1,0 +1,6 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');const exists=p=>assert.ok(fs.existsSync(path.join(root,p)),`Missing ${p}`);const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.json'),'utf8'));exists(manifest.background.service_worker);manifest.content_scripts.flatMap(s=>s.js).forEach(exists);
+const html=fs.readFileSync(path.join(root,'extension/dashboard/index.html'),'utf8');for(const match of html.matchAll(/(?:src|href)="([^"]+)"/g)){const target=match[1];if(target.startsWith('#')||/^https?:/.test(target))continue;exists(path.join('extension/dashboard',target));}
+for(const file of ['extension/dashboard/connection.js','extension/dashboard/ai-ui.js']){const text=fs.readFileSync(path.join(root,file),'utf8');for(const match of text.matchAll(/files:\['([^']+)'\]/g))exists(match[1]);}
+const background=fs.readFileSync(path.join(root,'extension/background.js'),'utf8');exists(background.match(/getURL\('([^']+)'\)/)[1]);
+const launcher=fs.readFileSync(path.join(root,'start-ai.command'),'utf8');assert.match(launcher,/node server\/ai-server.mjs/);exists('server/ai-server.mjs');console.log('Passed: manifest paths, dashboard scripts/styles/docs, injected scripts, background dashboard URL, launcher.');
