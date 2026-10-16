@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Reflect \u2014 LeetCode connection",
+  "name": "Reflect \u2014 LeetCode Coding Habits Analyzer",
   "version": "0.10.1",
-  "description": "Read your last year of submissions from your signed-in LeetCode tab and analyze them locally.",
+  "description": "Review coding habits from your LeetCode submissions, revisit unsolved problems, and track your progress.",
   "permissions": [
     "storage",
     "unlimitedStorage",
