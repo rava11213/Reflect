@@ -10,7 +10,7 @@ Chrome extension with signed-in LeetCode history sync, local code-quality checks
 
 Sync uses undocumented LeetCode endpoints, which may change or restrict access. No passwords or cookies are extracted. Source is not executed. Synced history is saved in Chrome extension local storage on this computer. **Clear data** removes history and saved AI reports. A partial history cannot establish your complete solved/unsolved status.
 
-To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.6.0**.
+To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.7.0**.
 
 ## Optional AI review
 
@@ -28,7 +28,7 @@ Reports are labeled with model, time, and selected submissions. They are not who
 - **Algorithms & improvement (local checks):** a limited set of pattern suggestions, separately labeled outcome/practice signals, and a four-week plan. Local checks do not perform semantic algorithm review.
 - **AI review:** separate model-generated source/context review, available after setup.
 
-Python local checks include mixed indentation, simple assignment spacing, naming consistency, long functions, broad exceptions, list-front removal, and Two Sum nested-loop suggestions. Basic naming and line-length checks support Python, JavaScript, TypeScript, Java, C++ (`cpp` included), and C#. C++ adds simple initializer spacing, range-loop copy, and output-flush suggestions. Comments/strings are masked for most checks. These text heuristics can misread unusual syntax; style signals are not proof of bad code. MySQL has no local source checks but can be selected for AI review.
+Python local checks include mixed indentation, simple assignment spacing, naming consistency, long functions, broad exceptions, list-front removal, and Two Sum nested-loop suggestions. Basic naming and line-length checks support Python, JavaScript, TypeScript, Java, C++ (`cpp` included), and C#. C++ adds simple initializer spacing, range-loop copy, and output-flush suggestions. Comments/strings are masked for most checks. These text heuristics can misread unusual syntax; style signals are not proof of bad code. SQL (including MySQL, PostgreSQL, and MS SQL Server) has local projection, NULL-comparison, nullable NOT IN, and result-alias checks. All imported source languages receive basic readability checks; recognized declarations receive naming checks. The expandable Check coverage panel reports the depth for each language.
 
 ## JSON import
 
@@ -66,3 +66,7 @@ Run `npm test` from the root to run all checks. No package installation is requi
 ## Compact dashboard — 0.6.0
 
 The overview uses a plain heading and shorter controls. Coding-habit, algorithm, and AI cards show a short recommendation, with explanations and code evidence in expandable details. Privacy and methodology details expand on demand; the AI sending consent and charge notice remain visible.
+
+## Language coverage — 0.7.0
+
+Recognizes LeetCode aliases for Python/Pandas, C/C++, C#, Java, JavaScript, TypeScript, Go, Rust, Ruby, Swift, Kotlin, Scala, Dart, PHP, R, Racket, Erlang, Elixir, Shell and SQL dialects. Unknown language labels receive basic checks instead of being discarded. Python/C++/SQL have additional local rules; other languages have basic naming/readability checks, not full semantic analysis. SQL checks do not infer indexes or query-plan performance. NULL-safe operators are excluded from the ordinary NULL-comparison check. Comment/string masking is heuristic and may miss unusual language syntax.
