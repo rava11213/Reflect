@@ -1,4 +1,4 @@
-# Gemini AI reviews — Reflect 0.10.0
+# Gemini AI reviews — Reflect 0.10.1
 
 ## Switch from OpenAI
 

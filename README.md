@@ -10,7 +10,7 @@ Chrome extension with signed-in LeetCode history sync, local code-quality checks
 
 Sync uses undocumented LeetCode endpoints, which may change or restrict access. No passwords or cookies are extracted. Source is not executed. Synced history is saved in Chrome extension local storage on this computer. **Clear data** removes history and saved AI reports. A partial history cannot establish your complete solved/unsolved status.
 
-To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.10.0**.
+To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.10.1**.
 
 ## Optional AI review
 
@@ -89,6 +89,6 @@ Progress defaults to **50 submissions ago · reconstructed** when at least 51 at
 
 Code then & now shows the boundary submission from before those 50 attempts and a recent submission. It prefers the same problem/language when available; selectors let you inspect either cohort. Different problems are reference examples, not proof of improvement. Missing source is explicitly shown. With fewer than 51 attempts the UI explains the required history. Real saved reviews remain selectable. Demo datasets support the reconstructed view but are never persisted as review history.
 
-## Connection diagnostics — 0.10.0
+## Connection diagnostics — 0.10.1
 
 Configured means credentials are present, not validated. Check connection now asks Gemini for the configured model’s metadata using the key held by the server. It sends no submitted code. This verifies authentication and model-metadata access; Generation permissions and quota are verified only by an actual review request. Restart the local server after this update. Errors distinguish rejected keys, denied permissions, missing models, quota, and rate limits.

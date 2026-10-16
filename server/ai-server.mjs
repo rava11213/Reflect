@@ -32,8 +32,11 @@ export function createReviewServer({apiKey,model,extensionId,fetchImpl=fetch}){
  const origin=`chrome-extension://${extensionId}`;let busy=false;
  return http.createServer(async(req,res)=>{
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
-  if(req.headers.origin!==origin||req.headers.host!==`127.0.0.1:${req.socket.localPort}`)return send(403,{error:'Only the configured Reflect extension may use this local server.'});
-  res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type');res.setHeader('Access-Control-Allow-Private-Network','true');
+  // Chrome extension GET requests can omit Origin. A custom header identifies
+  // those requests; web pages must preflight and still pass the origin check.
+  const allowedOrigin=req.headers.origin===origin||(!req.headers.origin&&req.headers['x-reflect-extension']===extensionId);
+  if(!allowedOrigin||req.headers.host!==`127.0.0.1:${req.socket.localPort}`)return send(403,{error:'Only the configured Reflect extension may use this local server.'});
+  res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS');res.setHeader('Access-Control-Allow-Headers','Content-Type, X-Reflect-Extension');res.setHeader('Access-Control-Allow-Private-Network','true');
   if(req.method==='OPTIONS'){res.writeHead(204);res.end();return}
   if(req.method==='GET'&&req.url==='/health')return send(200,{ready:!!apiKey&&!!model,model:model||null,provider:'gemini'});
   if(req.method==='GET'&&req.url==='/check-api'){try{return send(200,await checkApiConnection({apiKey,model,fetchImpl}))}catch(e){return send(502,{error:e.message})}}

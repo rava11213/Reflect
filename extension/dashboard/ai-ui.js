@@ -14,7 +14,7 @@ function showAIReport(saved){
 }
 async function aiServer(path,body){
  if(path!=='/health'){const health=await aiServer('/health');if(health.provider!=='gemini')throw Error('An older OpenAI server is still running. Stop it with Ctrl+C, then restart start-ai.command with your Gemini key.');}
- let r;try{r=await fetch('http://127.0.0.1:4318'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(body?190000:path==='/check-api'?25000:5000)})}catch(e){throw Error(e.name==='TimeoutError'?'AI request timed out. Check the local server before retrying.':'Cannot reach the local AI server. Follow docs/AI-SETUP.md, and verify REFLECT_EXTENSION_ID matches this extension.')}
+ let r;try{r=await fetch('http://127.0.0.1:4318'+path,{method:body?'POST':'GET',headers:{'X-Reflect-Extension':chrome.runtime.id,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(body?190000:path==='/check-api'?25000:5000)})}catch(e){throw Error(e.name==='TimeoutError'?'AI request timed out. Check the local server before retrying.':'Cannot reach the local AI server. Follow docs/AI-SETUP.md, and verify REFLECT_EXTENSION_ID matches this extension.')}
  let data;try{data=await r.json()}catch{throw Error('Local AI server returned an invalid response.');}if(!r.ok)throw Error(path==='/check-api'&&r.status===404?'Your local server is an older version. Stop it with Ctrl+C and restart start-ai.command.':data.error||'AI server error.');return data;
 }
 $('#aiHealth').onclick=async()=>{

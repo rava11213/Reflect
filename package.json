@@ -1,6 +1,6 @@
 {
   "name": "reflect-leetcode",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "private": true,
   "description": "LeetCode history, code quality and optional AI review",
   "engines": {
