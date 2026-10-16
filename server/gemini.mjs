@@ -11,7 +11,7 @@ export function apiFailure(status,payload={}) {
  if(status===403)return 'Gemini denied access. Check your Google API key restrictions, project permissions, API availability and region.';
  if(status===404)return 'The Gemini model was not found or is unavailable to this project. Restart with a model listed in Google AI Studio.';
  if(status===429)return 'Gemini rate limit or free-tier quota reached. Wait for your quota to reset or try a smaller selection. Check limits in Google AI Studio.';
- if(status===400)return 'Gemini rejected the request. Check that the model supports structured JSON and that the input fits its limits.';
+ if(status===400){const message=String(payload?.error?.message||'No details returned.').replace(/[\r\n]+/g,' ').slice(0,1200);return `Gemini rejected the request (400): ${message}`;}
  if(status===503)return 'Gemini is temporarily unavailable. Try again later.';
  return `Gemini request failed (HTTP ${status}). Check Google AI Studio and your server configuration.`;
 }
@@ -21,7 +21,7 @@ async function callGemini(path,{apiKey,body,fetchImpl=fetch,timeout=180000}) {
  try{response=await fetchImpl(API+path,{method:body?'POST':'GET',headers:{'x-goog-api-key':apiKey,...(body?{'Content-Type':'application/json'}:{})},signal:AbortSignal.timeout(timeout),...(body?{body:JSON.stringify(body)}:{})})}
  catch(e){throw Error(e.name==='TimeoutError'?'Gemini request timed out. Try a smaller selection.':'The local server cannot reach Google Gemini. Check your network or proxy.');}
  let payload;try{payload=await response.json()}catch{throw Error('Gemini returned an unreadable response.');}
- if(!response.ok)throw Error(apiFailure(response.status,payload));return payload;
+ if(!response.ok)throw Error(apiFailure(response.status,payload).split(apiKey).join('[REDACTED]').replace(/AIza[\w-]+/g,'[REDACTED]'));return payload;
 }
 export async function checkApiConnection({apiKey,model,fetchImpl=fetch}) {
  if(!apiKey||!model)throw Error('Configure GEMINI_API_KEY and GEMINI_MODEL, then restart the local server.');
@@ -33,7 +33,7 @@ export async function checkApiConnection({apiKey,model,fetchImpl=fetch}) {
 export async function requestGeminiReview(submissions,schema,{apiKey,model,fetchImpl=fetch}) {
  const name=modelName(model);
  const numbered=submissions.map(s=>({...s,code:s.code.split('\n').map((line,i)=>`${i+1}: ${line}`).join('\n')}));
- const payload=await callGemini(encodeURIComponent(name)+':generateContent',{apiKey,fetchImpl,body:{systemInstruction:{parts:[{text:reviewInstructions}]},contents:[{role:'user',parts:[{text:JSON.stringify({submissions:numbered})}]}],generationConfig:{maxOutputTokens:16000,responseFormat:{text:{mimeType:'application/json',schema}}}}});
+ const payload=await callGemini(encodeURIComponent(name)+':generateContent',{apiKey,fetchImpl,body:{systemInstruction:{parts:[{text:reviewInstructions}]},contents:[{role:'user',parts:[{text:JSON.stringify({submissions:numbered})}]}],generationConfig:{maxOutputTokens:16000,responseMimeType:'application/json',responseJsonSchema:schema}}});
  if(payload.promptFeedback?.blockReason)throw Error('Gemini declined the supplied content. No review was returned.');
  const candidate=payload.candidates?.[0];
  if(candidate?.finishReason==='MAX_TOKENS')throw Error('AI response was incomplete; review fewer submissions.');
