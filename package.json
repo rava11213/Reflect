@@ -1,13 +1,13 @@
 {
   "name": "reflect-leetcode",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "private": true,
   "description": "LeetCode history, code quality and optional AI review",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "test": "node tests/test-layout.cjs && node tests/test-review.cjs && node tests/test-languages.cjs && node tests/test-unsolved.cjs && node tests/test-connection.cjs && node tests/test-ai-ui.cjs && node tests/test-ai.mjs",
+    "test": "node tests/test-layout.cjs && node tests/test-review.cjs && node tests/test-languages.cjs && node tests/test-progress.cjs && node tests/test-progress-ui.cjs && node tests/test-unsolved.cjs && node tests/test-connection.cjs && node tests/test-ai-ui.cjs && node tests/test-ai.mjs",
     "start": "node server/ai-server.mjs"
   }
 }

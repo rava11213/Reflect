@@ -10,13 +10,13 @@ Chrome extension with signed-in LeetCode history sync, local code-quality checks
 
 Sync uses undocumented LeetCode endpoints, which may change or restrict access. No passwords or cookies are extracted. Source is not executed. Synced history is saved in Chrome extension local storage on this computer. **Clear data** removes history and saved AI reports. A partial history cannot establish your complete solved/unsolved status.
 
-To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.7.1**.
+To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.8.0**.
 
 ## Optional AI review
 
 See [AI-SETUP.md](docs/AI-SETUP.md). Start `start-ai.command` on macOS (Node.js 20+), configure your own OpenAI API key at the hidden Terminal prompt, then use the dashboard's **AI review** section.
 
-Select 1–5 latest solutions per request. Prepare and inspect their source and problem statements/constraints, then explicitly run a review. The local server sends that selection to OpenAI's Responses API. The model returns coding habits, algorithm/complexity analysis, alternatives with tradeoffs, and practice exercises. API charges apply. Nothing is sent to an AI provider during ordinary sync or local analysis. The key stays on the local server, outside browser storage and the repository.
+Select 1–5 latest solutions per request. Prepare and inspect their source and problem statements/constraints, then explicitly run a review. The local server sends that selection to OpenAI's Responses API. The model returns coding habits, algorithm/complexity analysis, alternatives with tradeoffs, and improvement suggestions. API charges apply. Nothing is sent to an AI provider during ordinary sync or local analysis. The key stays on the local server, outside browser storage and the repository.
 
 Reports are labeled with model, time, and selected submissions. They are not whole-year conclusions. Citation quotes and line ranges are checked against source; correctness, complexity, and optimality conclusions still require verification. The latest AI report and its source/context sample are stored locally and can be exported or cleared. API provider data policies apply independently; requests set `store: false`.
 
@@ -25,7 +25,7 @@ Reports are labeled with model, time, and selected submissions. They are not who
 - Year activity, acceptance statistics, and supplied topic-tag breakdown.
 - **Attempted but not solved:** problems attempted in the selected year with no accepted attempt in imported history through the review end date; searchable, with counts, latest verdicts, dates, and links.
 - **Coding habits (local checks):** naming, formatting, readability, and structure, with evidence lines and suggestions. Latest source per problem/language avoids counting retries as separate habits.
-- **Algorithms & improvement (local checks):** a limited set of pattern suggestions, separately labeled outcome/practice signals, and a four-week plan. Local checks do not perform semantic algorithm review.
+- **Algorithms & improvement (local checks):** a limited set of pattern suggestions, separately labeled outcome/practice signals, without generated schedules. Local checks do not perform semantic algorithm review.
 - **AI review:** separate model-generated source/context review, available after setup.
 
 Python local checks include mixed indentation, simple assignment spacing, naming consistency, long functions, broad exceptions, list-front removal, and Two Sum nested-loop suggestions. Basic naming and line-length checks support Python, JavaScript, TypeScript, Java, C++ (`cpp` included), and C#. C++ adds simple initializer spacing, range-loop copy, and output-flush suggestions. Comments/strings are masked for most checks. These text heuristics can misread unusual syntax; style signals are not proof of bad code. SQL (including MySQL, PostgreSQL, and MS SQL Server) has local projection, NULL-comparison, nullable NOT IN, and result-alias checks. All imported source languages receive basic readability checks; recognized declarations receive naming checks. The expandable Check coverage panel reports the depth for each language.
@@ -70,3 +70,13 @@ The overview uses a plain heading and shorter controls. Coding-habit, algorithm,
 ## Language coverage — 0.7.0
 
 Recognizes LeetCode aliases for Python/Pandas, C/C++, C#, Java, JavaScript, TypeScript, Go, Rust, Ruby, Swift, Kotlin, Scala, Dart, PHP, R, Racket, Erlang, Elixir, Shell and SQL dialects. Unknown language labels receive basic checks instead of being discarded. Python/C++/SQL have additional local rules; other languages have basic naming/readability checks, not full semantic analysis. SQL checks do not infer indexes or query-plan performance. NULL-safe operators are excluded from the ordinary NULL-comparison check. Comment/string masking is heuristic and may miss unusual language syntax.
+
+## Progress tracking — 0.8.0
+
+Progress, Coding habits, and Unsolved are the primary navigation. Weekly plans are removed. Year totals and review methodology are expandable; activity, topics, AI review, and algorithm feedback remain available. Habit cards prioritize the top three recurring findings.
+
+The first successful sync (or an existing saved history on upgrade) establishes a baseline. Later changed imports save new metric snapshots automatically. Identical datasets are deduplicated; the first baseline and latest 59 snapshots are kept. Use Compare with to select a saved review. Snapshots store IDs, rule counts, language families, source fingerprints, and problem status, not full code. Clear data also clears snapshot history. Demo data is never saved. An explicitly incomplete sync is not added to review history.
+
+Habit trends compare baseline source against new latest solutions submitted after that baseline, separately within each language family. Both samples need at least five solutions, the same local rule version, and complete imported source without fetch errors. Lower rates are labeled less frequent; zero occurrences are labeled not observed. Samples can differ in topic/difficulty, and these are heuristic signals, not proof of a fixed habit. AI reviews are sample-specific and are not automatically compared or run.
+
+Previously unsolved problems count as solved only when an accepted submission dated after the baseline is present. Aging out of the year or backfilling an older accepted attempt does not count as progress. Imports with no shared submission IDs are not compared. Incomplete imports, missing source, and changed rule sets are shown explicitly. Historical progress before the first saved baseline is not reconstructed.
