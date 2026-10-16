@@ -34,7 +34,7 @@
     const accepted = new Map();
     for (const s of available.filter(s => s.status.toLowerCase() === 'accepted')) {
       const key = keyOf(s);
-      if (!accepted.has(key) || accepted.get(key).timestamp > s.timestamp) accepted.set(key, { key, title: s.title, titleSlug: s.titleSlug, timestamp: s.timestamp });
+      if (!accepted.has(key) || accepted.get(key).timestamp > s.timestamp) accepted.set(key, { key, id: s.id, title: s.title, titleSlug: s.titleSlug, timestamp: s.timestamp });
     }
     const snapshot = {
       version: 1, ruleset: RULESET, capturedAt: now, cutoff, start: report.start, end,
@@ -48,7 +48,7 @@
     return snapshot;
   }
   function recordSnapshot(history, snapshot) {
-    if (!snapshot.submissions || !snapshot.quality.complete) return history;
+    if (!snapshot.submissions || !snapshot.quality.complete || snapshot.mode === 'submission-offset') return history;
     const valid = history.filter(s => s.version === 1);
     if (valid.at(-1)?.fingerprint === snapshot.fingerprint && valid.at(-1)?.ruleset === snapshot.ruleset) return history;
     const next = [...valid, snapshot];
@@ -59,8 +59,9 @@
     if (current.cutoff < baseline.cutoff) return { state: 'earlier-window', changes: [], solved: [], newSolutions: 0 };
     if (baseline.submissionIds?.length && current.submissionIds?.length && !baseline.submissionIds.some(id => current.submissionIds.includes(id))) return { state: 'different-history', changes: [], solved: [], newSolutions: 0 };
     const unsolved = new Set(baseline.unsolved.map(s => s.key));
-    const solved = current.accepted.filter(s => unsolved.has(s.key) && s.timestamp > baseline.cutoff);
-    const recent = current.observations.filter(s => s.timestamp > baseline.cutoff);
+    const historicalIds = baseline.mode === 'submission-offset' ? new Set(baseline.submissionIds) : null;
+    const solved = current.accepted.filter(s => unsolved.has(s.key) && (historicalIds ? !historicalIds.has(s.id) : s.timestamp > baseline.cutoff));
+    const recent = current.observations.filter(s => historicalIds ? !historicalIds.has(s.id) : s.timestamp > baseline.cutoff);
     const result = { state: 'ready', changes: [], solved, newSolutions: recent.length };
     if (baseline.ruleset !== current.ruleset) return { ...result, state: 'rules-changed' };
     if (!baseline.quality.complete || !current.quality.complete || baseline.quality.errors || current.quality.errors || baseline.quality.missingSource || current.quality.missingSource) return { ...result, state: 'incomplete-source' };
@@ -84,6 +85,17 @@
     }
     return result;
   }
-  root.ReflectProgress = { createSnapshot, recordSnapshot, compare, MIN_SAMPLE, RULESET };
+  function submissionsAgo(items, end, count = 50, options = {}) {
+    const now = options.now || new Date().toISOString();
+    const cutoff = Math.min(Date.parse(end + 'T23:59:59.999Z'), Date.parse(now));
+    const ordered = Analysis.analyze(items, end).data.filter(s => Date.parse(s.timestamp) <= cutoff).slice().sort((a, b) => a.timestamp.localeCompare(b.timestamp) || a.id.localeCompare(b.id, undefined, { numeric: true }));
+    if (ordered.length <= count) return { available: false, required: count + 1, found: ordered.length };
+    const older = ordered.slice(0, -count), latest = ordered.slice(-count);
+    const baseline = createSnapshot(older, end, { ...options, now: older.at(-1).timestamp });
+    baseline.mode = 'submission-offset'; baseline.offset = count;
+    const current = createSnapshot(ordered, end, { ...options, now });
+    return { available: true, baseline, current, older, latest, comparison: compare(baseline, current) };
+  }
+  root.ReflectProgress = { createSnapshot, recordSnapshot, compare, submissionsAgo, MIN_SAMPLE, RULESET };
   if (typeof module !== 'undefined') module.exports = root.ReflectProgress;
 })(typeof window === 'undefined' ? globalThis : window);

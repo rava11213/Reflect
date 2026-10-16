@@ -10,7 +10,7 @@ Chrome extension with signed-in LeetCode history sync, local code-quality checks
 
 Sync uses undocumented LeetCode endpoints, which may change or restrict access. No passwords or cookies are extracted. Source is not executed. Synced history is saved in Chrome extension local storage on this computer. **Clear data** removes history and saved AI reports. A partial history cannot establish your complete solved/unsolved status.
 
-To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.8.0**.
+To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.9.0**.
 
 ## Optional AI review
 
@@ -73,10 +73,18 @@ Recognizes LeetCode aliases for Python/Pandas, C/C++, C#, Java, JavaScript, Type
 
 ## Progress tracking — 0.8.0
 
-Progress, Coding habits, and Unsolved are the primary navigation. Weekly plans are removed. Year totals and review methodology are expandable; activity, topics, AI review, and algorithm feedback remain available. Habit cards prioritize the top three recurring findings.
+Overview is the default view, with current habits and unsolved problems. Progress is a separate tab. Weekly plans are removed. Year totals and review methodology are expandable; activity, topics, AI review, and algorithm feedback remain available. Habit cards prioritize the top three recurring findings.
 
 The first successful sync (or an existing saved history on upgrade) establishes a baseline. Later changed imports save new metric snapshots automatically. Identical datasets are deduplicated; the first baseline and latest 59 snapshots are kept. Use Compare with to select a saved review. Snapshots store IDs, rule counts, language families, source fingerprints, and problem status, not full code. Clear data also clears snapshot history. Demo data is never saved. An explicitly incomplete sync is not added to review history.
 
 Habit trends compare baseline source against new latest solutions submitted after that baseline, separately within each language family. Both samples need at least five solutions, the same local rule version, and complete imported source without fetch errors. Lower rates are labeled less frequent; zero occurrences are labeled not observed. Samples can differ in topic/difficulty, and these are heuristic signals, not proof of a fixed habit. AI reviews are sample-specific and are not automatically compared or run.
 
 Previously unsolved problems count as solved only when an accepted submission dated after the baseline is present. Aging out of the year or backfilling an older accepted attempt does not count as progress. Imports with no shared submission IDs are not compared. Incomplete imports, missing source, and changed rule sets are shown explicitly. Historical progress before the first saved baseline is not reconstructed.
+
+## Overview and 50-submission comparison — 0.9.0
+
+The extension starts on Overview, with year totals, current habit findings, and unsolved problems. Progress opens as a separate view, not another section of the same scrolling page.
+
+Progress defaults to **50 submissions ago · reconstructed** when at least 51 attempts are available within the selected imported year. It removes exactly the latest 50 attempts (all verdicts) and reruns the same local checks on the earlier prefix. This uses actual imported code; it does not invent or claim a saved review existed then. Each side reviews the latest available source per problem/language family. The 50 attempts may represent fewer than 50 distinct solutions. Tied timestamps use numeric submission-ID ordering when possible.
+
+Code then & now shows the boundary submission from before those 50 attempts and a recent submission. It prefers the same problem/language when available; selectors let you inspect either cohort. Different problems are reference examples, not proof of improvement. Missing source is explicitly shown. With fewer than 51 attempts the UI explains the required history. Real saved reviews remain selectable. Demo datasets support the reconstructed view but are never persisted as review history.

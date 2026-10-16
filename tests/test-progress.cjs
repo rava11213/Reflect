@@ -22,3 +22,12 @@ let history=recordSnapshot([],baseline);assert.equal(recordSnapshot(history,base
 for(let i=0;i<70;i++)history=recordSnapshot(history,{...current,fingerprint:String(i),capturedAt:String(i)});assert.equal(history.length,60);assert.equal(history[0],baseline);
 assert.ok(!JSON.stringify(baseline).includes('def solve'));assert.equal(compare(null,current).state,'no-baseline');assert.equal(compare(current,baseline).state,'earlier-window');
 console.log('Passed: genuine solves, new-source frequencies, sample-size gate, language cohorts, not-observed wording, incomplete source, rule changes, unrelated histories, no aging/backfill false solves, snapshot deduplication/retention, no full source saved.');
+const {submissionsAgo}=require('../extension/analysis/progress.js');
+const timeline=Array.from({length:70},(_,i)=>make(String(i+1),'Question '+(i%12),'2026-10-'+String(1+Math.floor(i/4)).padStart(2,'0'),i<20));
+const offset=submissionsAgo(timeline,'2026-10-31',50,{now:'2026-10-31T23:59:59Z'});
+assert.equal(offset.available,true);assert.equal(offset.older.length,20);assert.equal(offset.latest.length,50);assert.equal(offset.older.at(-1).id,'20');assert.equal(offset.latest[0].id,'21');assert.equal(offset.baseline.mode,'submission-offset');assert.equal(recordSnapshot([],offset.baseline).length,0);assert.equal(offset.current.submissions,70);
+assert.equal(submissionsAgo(timeline.slice(0,50),'2026-10-31',50,{now:'2026-10-31T23:59:59Z'}).available,false);
+const sameTime=Array.from({length:60},(_,i)=>({...make(String(i+1),'Same second '+i,'2026-10-01',i<10),timestamp:'2026-10-01T12:00:00.000Z'}));
+const tied=submissionsAgo(sameTime.reverse(),'2026-10-16',50,{now:'2026-10-16T23:00:00Z'});assert.equal(tied.older.at(-1).id,'10');assert.equal(tied.latest[0].id,'11');assert.equal(tied.comparison.newSolutions,50);
+const pending=Array.from({length:60},(_,i)=>({...make(String(i+1),i===0||i===59?'Pending same second':'Other '+i,'2026-10-01',false,i===0?'Wrong Answer':'Accepted'),timestamp:'2026-10-01T12:00:00.000Z'}));assert.equal(submissionsAgo(pending,'2026-10-16',50,{now:'2026-10-16T23:00:00Z'}).comparison.solved.length,1);
+console.log('Passed: exact 50-attempt reconstruction, code boundary, insufficient history, no reconstructed snapshot persistence, stable ID ordering and same-second submissions/solves.');
