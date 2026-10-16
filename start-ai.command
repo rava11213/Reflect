@@ -12,13 +12,13 @@ if [[ ! "$REFLECT_EXTENSION_ID" =~ '^[a-p]{32}$' ]]; then
   exit 1
 fi
 export REFLECT_EXTENSION_ID
-read 'reflectModel?OpenAI API model [gpt-6-astra]: '
-export OPENAI_MODEL="${reflectModel:-gpt-6-astra}"
-read -s 'OPENAI_API_KEY?OpenAI API key (hidden): '
+read 'reflectModel?Gemini API model [gemini-3.8-flash]: '
+export GEMINI_MODEL="${reflectModel:-gemini-3.8-flash}"
+read -s 'GEMINI_API_KEY?Gemini API key (hidden): '
 print ''
-if [[ -z "${OPENAI_API_KEY//[[:space:]]/}" ]]; then
-  print 'No API key was entered. Run this launcher again, paste your OpenAI API key at the hidden prompt, then press Return. Input stays invisible.'
+if [[ -z "${GEMINI_API_KEY//[[:space:]]/}" ]]; then
+  print 'No API key was entered. Run this launcher again, paste your Gemini API key at the hidden prompt, then press Return. Input stays invisible.'
   exit 1
 fi
-export OPENAI_API_KEY
+export GEMINI_API_KEY
 exec node server/ai-server.mjs

@@ -1,6 +1,6 @@
 # Reflect — LeetCode coding review
 
-Chrome extension with signed-in LeetCode history sync, local code-quality checks, and optional OpenAI API reviews.
+Chrome extension with signed-in LeetCode history sync, local code-quality checks, and optional Gemini API reviews.
 
 ## Install and sync
 
@@ -10,15 +10,15 @@ Chrome extension with signed-in LeetCode history sync, local code-quality checks
 
 Sync uses undocumented LeetCode endpoints, which may change or restrict access. No passwords or cookies are extracted. Source is not executed. Synced history is saved in Chrome extension local storage on this computer. **Clear data** removes history and saved AI reports. A partial history cannot establish your complete solved/unsolved status.
 
-To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.9.2**.
+To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.10.0**.
 
 ## Optional AI review
 
-See [AI-SETUP.md](docs/AI-SETUP.md). Start `start-ai.command` on macOS (Node.js 20+), configure your own OpenAI API key at the hidden Terminal prompt, then use the dashboard's **AI review** section.
+See [AI-SETUP.md](docs/AI-SETUP.md). Start `start-ai.command` on macOS (Node.js 20+), configure your own Gemini API key at the hidden Terminal prompt, then use the dashboard's **AI review** section.
 
-Select 1–5 latest solutions per request. Prepare and inspect their source and problem statements/constraints, then explicitly run a review. The local server sends that selection to OpenAI's Responses API. The model returns coding habits, algorithm/complexity analysis, alternatives with tradeoffs, and improvement suggestions. API charges apply. Nothing is sent to an AI provider during ordinary sync or local analysis. The key stays on the local server, outside browser storage and the repository.
+Select 1–5 latest solutions per request. Prepare and inspect their source and problem statements/constraints, then explicitly run a review. The local server sends that selection to Google Gemini's Generate Content API. The model returns coding habits, algorithm/complexity analysis, alternatives with tradeoffs, and improvement suggestions. Free-tier limits or API charges apply. Nothing is sent to an AI provider during ordinary sync or local analysis. The key stays on the local server, outside browser storage and the repository.
 
-Reports are labeled with model, time, and selected submissions. They are not whole-year conclusions. Citation quotes and line ranges are checked against source; correctness, complexity, and optimality conclusions still require verification. The latest AI report and its source/context sample are stored locally and can be exported or cleared. API provider data policies apply independently; requests set `store: false`.
+Reports are labeled with model, time, and selected submissions. They are not whole-year conclusions. Citation quotes and line ranges are checked against source; correctness, complexity, and optimality conclusions still require verification. The latest AI report and its source/context sample are stored locally and can be exported or cleared. Google’s data policies apply; free-tier content may be used to improve products.
 
 ## Dashboard
 
@@ -44,7 +44,7 @@ Import a JSON array or `{ "submissions": [...] }`. Required: `id`, `timestamp` (
 - `server/ai-server.mjs`: loopback-only API server, structured response validation, and source evidence checks.
 - `extension/dashboard/index.html`, `extension/dashboard/style.css`, `extension/dashboard/app.js`: dashboard.
 
-No npm dependencies. Run `node tests/test-ai.mjs`, `node tests/test-review.cjs`, `node tests/test-unsolved.cjs`, and `node tests/test-connection.cjs`. AI tests mock OpenAI; a live paid review is not part of the automated tests.
+No npm dependencies. Run `node tests/test-ai.mjs`, `node tests/test-review.cjs`, `node tests/test-unsolved.cjs`, and `node tests/test-connection.cjs`. AI tests mock Gemini; a live paid review is not part of the automated tests.
 
 ## Project layout
 
@@ -55,7 +55,7 @@ extension/
   content/               # LeetCode history and problem statements
   dashboard/             # UI, sync controls, and AI review controls
   analysis/              # Local code review and statistics
-server/                  # OpenAI API server
+server/                  # Gemini API server
 tests/                   # Automated checks
 docs/                    # AI setup guide
 start-ai.command         # macOS launcher
@@ -89,6 +89,6 @@ Progress defaults to **50 submissions ago · reconstructed** when at least 51 at
 
 Code then & now shows the boundary submission from before those 50 attempts and a recent submission. It prefers the same problem/language when available; selectors let you inspect either cohort. Different problems are reference examples, not proof of improvement. Missing source is explicitly shown. With fewer than 51 attempts the UI explains the required history. Real saved reviews remain selectable. Demo datasets support the reconstructed view but are never persisted as review history.
 
-## Connection diagnostics — 0.9.2
+## Connection diagnostics — 0.10.0
 
-Configured means credentials are present, not validated. Check connection now asks OpenAI for the configured model’s metadata using the key held by the server. It sends no submitted code. This verifies authentication and model-metadata access; Responses permissions and quota are verified only by an actual review request. Restart the local server after this update. Errors distinguish rejected keys, denied permissions, missing models, quota, and rate limits.
+Configured means credentials are present, not validated. Check connection now asks Gemini for the configured model’s metadata using the key held by the server. It sends no submitted code. This verifies authentication and model-metadata access; Generation permissions and quota are verified only by an actual review request. Restart the local server after this update. Errors distinguish rejected keys, denied permissions, missing models, quota, and rate limits.

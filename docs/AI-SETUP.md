@@ -1,54 +1,47 @@
-# Enable AI reviews in Reflect 0.5.1
+# Gemini AI reviews — Reflect 0.10.0
 
-The extension now supports real OpenAI API reviews. API usage is separate from the local heuristic checks. You need your own OpenAI API key and API billing/model access; do not paste the key into this chat or the extension.
+## Switch from OpenAI
 
-## Start on macOS
+1. Stop the old AI server with **Ctrl+C** in its Terminal window.
+2. Reload Reflect in `chrome://extensions`, close the old dashboard, and reopen it.
+3. Create your own [Gemini API key in Google AI Studio](https://aistudio.google.com/apikey). Do not paste it into chat or the extension.
+4. Run `zsh start-ai.command` from this project folder, or double-click the launcher. Node.js 20+ is required.
+5. Enter Reflect’s extension ID from `chrome://extensions`. Accept the default model, `gemini-3.8-flash`, or enter a supported Gemini text model. Enter your Gemini key at the hidden prompt.
+6. Leave Terminal running. In **AI review**, click **Check connection**. This verifies the key and model metadata without sending code. A review checks generation quota and structured-output support.
+7. Select 1–5 solutions, prepare them, inspect the code and problem context, check consent, and click **Run AI review**.
 
-1. Reload Reflect in `chrome://extensions`. If prompted, approve access to the local review server. Open Reflect again.
-2. Copy Reflect's extension ID from `chrome://extensions`.
-3. In Finder, double-click `start-ai.command` in the project root folder. It opens Terminal. Enter your extension ID, choose a model available to your API account, and enter your API key at the hidden prompt. The default is `gpt-6-astra`; you can change it. Node.js 20 or later must be installed.
-4. Leave that Terminal window running. Reflect's **AI review → Check connection** verifies authentication and model-metadata access with OpenAI. It sends no code. Review permissions and quota are checked when a review runs.
-5. Select 1–5 latest solutions, then click **Prepare selected solutions**. Reflect fetches the problem statement from your signed-in LeetCode tab. If unavailable, paste the full problem and constraints into the visible context box. You can edit the context and inspect the exact source before sending.
-6. Check the consent box and click **Run AI review**. Nothing is sent to OpenAI during ordinary sync or preparation. API charges apply when you run a review.
+Restart the launcher whenever you change the key, model, or extension ID. Keys stay in the server process environment and are not saved in project files or browser storage. Existing saved OpenAI reports remain readable and labeled; the updated dashboard blocks sending code to an older server.
 
-The launcher keeps the key in process memory/environment, not in files. Stop with Ctrl+C in Terminal; start again when needed. If macOS blocks opening the launcher, open Terminal in the project root folder and run `zsh start-ai.command` yourself.
-
-## Start manually (macOS zsh)
-
-Run from the project root folder (the folder containing manifest.json):
+## Manual start (macOS zsh)
 
 ```zsh
 read "REFLECT_EXTENSION_ID?Reflect extension ID: "
 export REFLECT_EXTENSION_ID
-read "OPENAI_MODEL?OpenAI API model: "
-export OPENAI_MODEL
-read -s "OPENAI_API_KEY?OpenAI API key (hidden): "
-export OPENAI_API_KEY
+read "GEMINI_MODEL?Gemini model (e.g. gemini-3.8-flash): "
+export GEMINI_MODEL
+read -s "GEMINI_API_KEY?Gemini API key (hidden): "
+export GEMINI_API_KEY
 node server/ai-server.mjs
 ```
 
-The server binds only to `127.0.0.1:4318`. It accepts browser requests only from the exact configured extension origin, and checks the Host header. The API key is never returned to the extension. Restart if you change the key, model, or extension ID. Do not expose this server on the network. API authentication, quota, model-access, and incomplete-result failures appear in Reflect. No automatic retry triggers additional charges.
+The server binds to `127.0.0.1:4318` and accepts only the configured extension origin and local Host header. It never returns the key to the extension. No automatic retry sends additional requests.
 
-## What gets sent and saved
+## Cost and data
 
-- Each request sends only the 1–5 prepared source files, titles, languages, and visible problem statements/constraints to `https://api.openai.com/v1/responses` through the local server.
-- History, account credentials, cookies, and API keys are not included in the model input. Keys are used only as the API authorization header.
-- Requests use Structured Outputs and `store: false`. That flag is not a promise of zero provider-side retention; OpenAI's API data controls still apply.
-- The latest AI report and its exact source/context sample are saved in extension local storage, replacing the previous report. Download it before running another if you want to retain earlier reports. Clear saved AI review deletes the local copy. This does not delete provider-side records.
-- Coding habits, algorithm explanation, time/space complexity, alternatives, tradeoffs, and improvement suggestions are generated by the model. The server checks citation IDs, line ranges, and source quotes before displaying a report. These checks verify quotations, not the truth of the assessment.
-- The review is a selected sample, not an automated full-year audit. Unsupported local-check languages such as MySQL can still be reviewed by AI. Reports can be wrong; verify assumptions and test suggested changes. Submitted code is never executed by this application.
+Gemini offers a free tier for eligible models/projects, with rate and quota limits. Billing-enabled projects may incur charges. Check [current Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing) and your AI Studio project limits. Free-tier content may be used to improve Google products; review Google’s terms before sending code.
 
-## Development
+Only your explicitly selected source, titles, languages, and visible problem statements/constraints are sent to Google’s Generate Content API. The key is supplied in the `x-goog-api-key` header, never the URL or model input. LeetCode cookies and account credentials are not sent. Ordinary sync and local analysis do not call Gemini.
 
-No npm packages are needed. Run:
+The latest report and its source/context sample are stored locally, replacing the previous AI report. Export before replacing it if needed. Clearing the local report does not delete provider records. Citation IDs, line ranges, and quotations are checked against source; these checks do not establish correctness or optimality. Reports cover the selected sample, not the entire year.
 
-```sh
-node tests/test-ai.mjs
-node tests/test-review.cjs
-node tests/test-unsolved.cjs
-node tests/test-connection.cjs
-```
+## Troubleshooting
 
-AI tests use an injected mock API transport and a real loopback HTTP server; they make no OpenAI calls and incur no charges. The first live review requires a key configured by you.
+- **Older OpenAI server:** stop it, then restart the updated launcher.
+- **Rejected key:** create/check your Gemini key in AI Studio and restart.
+- **Access denied:** check key restrictions, project permissions, API availability and region.
+- **Quota reached:** check AI Studio limits; wait for reset or reduce the selection.
+- **Model unavailable:** select a supported Gemini text model in AI Studio.
 
-Official references: https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses and https://developers.openai.com/api/docs/guides/your-data
+Run `npm test` for automated checks. Tests mock Gemini and make no live provider requests. A live connection requires your own configured key.
+
+[Structured output documentation](https://ai.google.dev/gemini-api/docs/generate-content/structured-output)
