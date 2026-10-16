@@ -10,7 +10,7 @@ Chrome extension with signed-in LeetCode history sync, local code-quality checks
 
 Sync uses undocumented LeetCode endpoints, which may change or restrict access. No passwords or cookies are extracted. Source is not executed. Synced history is saved in Chrome extension local storage on this computer. **Clear data** removes history and saved AI reports. A partial history cannot establish your complete solved/unsolved status.
 
-To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.9.0**.
+To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.9.1**.
 
 ## Optional AI review
 
