@@ -7,7 +7,7 @@ The extension now supports real OpenAI API reviews. API usage is separate from t
 1. Reload Reflect in `chrome://extensions`. If prompted, approve access to the local review server. Open Reflect again.
 2. Copy Reflect's extension ID from `chrome://extensions`.
 3. In Finder, double-click `start-ai.command` in the project root folder. It opens Terminal. Enter your extension ID, choose a model available to your API account, and enter your API key at the hidden prompt. The default is `gpt-6-astra`; you can change it. Node.js 20 or later must be installed.
-4. Leave that Terminal window running. Reflect's **AI review → Check AI connection** should report ready.
+4. Leave that Terminal window running. Reflect's **AI review → Check connection** verifies authentication and model-metadata access with OpenAI. It sends no code. Review permissions and quota are checked when a review runs.
 5. Select 1–5 latest solutions, then click **Prepare selected solutions**. Reflect fetches the problem statement from your signed-in LeetCode tab. If unavailable, paste the full problem and constraints into the visible context box. You can edit the context and inspect the exact source before sending.
 6. Check the consent box and click **Run AI review**. Nothing is sent to OpenAI during ordinary sync or preparation. API charges apply when you run a review.
 
