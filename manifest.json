@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Reflect \u2014 LeetCode connection",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Read your last year of submissions from your signed-in LeetCode tab and analyze them locally.",
   "permissions": [
     "storage",

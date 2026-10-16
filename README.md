@@ -10,7 +10,7 @@ Chrome extension with signed-in LeetCode history sync, local code-quality checks
 
 Sync uses undocumented LeetCode endpoints, which may change or restrict access. No passwords or cookies are extracted. Source is not executed. Synced history is saved in Chrome extension local storage on this computer. **Clear data** removes history and saved AI reports. A partial history cannot establish your complete solved/unsolved status.
 
-To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.5.1**.
+To update: reload Reflect in `chrome://extensions`, approve new permissions if requested, close the old dashboard, and reopen through the extension icon. Existing saved submissions are reanalyzed. Current version: **0.6.0**.
 
 ## Optional AI review
 
@@ -62,3 +62,7 @@ start-ai.command         # macOS launcher
 ```
 
 Run `npm test` from the root to run all checks. No package installation is required. Reload the extension and reopen its dashboard after updating; keep loading this root folder, not the extension subfolder.
+
+## Compact dashboard — 0.6.0
+
+The overview uses a plain heading and shorter controls. Coding-habit, algorithm, and AI cards show a short recommendation, with explanations and code evidence in expandable details. Privacy and methodology details expand on demand; the AI sending consent and charge notice remain visible.
